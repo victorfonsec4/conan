@@ -142,13 +142,20 @@ class BazelDeps(object):
             else:
                 linkopts.append('"-l{}"'.format(system_lib))
 
-        linkopts = ', '.join(linkopts)
         lib_dir = 'lib'
 
         dependencies = []
         for dep in dependency.dependencies.direct_host.values():
-            dependencies.append(dep.ref.name)
+            if dep.ref.version == "system" :
+                if platform.system() == "Windows":
+                    linkopts.append('"/DEFAULTLIB:{}32"'.format(dep.ref.name))
+                else:
+                    linkopts.append('"-l{}"'.format(rep.ref.name))
 
+            else:
+                dependencies.append(dep.ref.name)
+
+        linkopts = ', '.join(linkopts)
         shared_library = dependency.options.get_safe("shared") if dependency.options else False
 
         libs = {}
